@@ -92,6 +92,7 @@ module Gitdocs
     def push_changes
       sh 'find . -type d -regex ``./[^.].*'' -empty -exec touch \'{}/.gitignore\' \;'
       sh 'git add .'
+      commitmsg = 'git status --porcelain' 
       # TODO make this message nicer
       # what to do here? parse git status before commit, use parse output
       # as commit message? - jf
