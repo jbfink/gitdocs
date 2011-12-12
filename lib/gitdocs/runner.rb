@@ -93,6 +93,8 @@ module Gitdocs
       sh 'find . -type d -regex ``./[^.].*'' -empty -exec touch \'{}/.gitignore\' \;'
       sh 'git add .'
       # TODO make this message nicer
+      # what to do here? parse git status before commit, use parse output
+      # as commit message? - jf
       sh "git commit -a -m'Auto-commit from gitdocs'" unless sh("git status -s").strip.empty?
       if @current_revision.nil? || sh('git status')[/branch is ahead/]
         out, code = sh_with_code("git push #{@current_remote} #{@current_branch}")
