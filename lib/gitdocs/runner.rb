@@ -6,7 +6,7 @@ module Gitdocs
 
     def initialize(share)
       @share = share
-      @root  = share.path
+      @root  = share.path.sub(%r{/+$},'')
       @polling_interval = share.polling_interval
       @icon = File.expand_path("../../img/icon.png", __FILE__)
     end
@@ -141,22 +141,24 @@ module Gitdocs
     IGNORED_FILES = ['.gitignore']
     # dir_files("some/dir") => [<Docfile>, <Docfile>]
     def dir_files(dir)
-      dir_path = File.expand_path(dir, @root)
+      dir_path = File.expand_path(dir, @root).sub(%r{/+$}, '')
       files = {}
       ls_files = sh_string("git ls-files").split("\n").map { |f| Docfile.new(f) }
       ls_files.select { |f| f.within?(dir, @root) }.each do |f|
-        path = File.expand_path(f.parent, root)
+        path = File.expand_path(f.parent, root).sub(%r{/+$}, '')
         files[path] ||= Docdir.new(path)
         files[path].files << f unless IGNORED_FILES.include?(f.name)
       end
       files.keys.each { |f| files[f].parent = files[File.dirname(f)] }
-      files[dir_path]
+      files[dir_path] || Docdir.new(dir_path)
     end
 
     def file_meta(file)
       file = file.gsub(%r{^/}, '')
       full_path = File.expand_path(file, @root)
-      author, modified = sh_string("git log --format='%aN|%ai' -n1 #{ShellTools.escape(file)}").split("|")
+      log_result = sh_string("git log --format='%aN|%ai' -n1 #{ShellTools.escape(file)}")
+      return {} unless File.exist?(full_path) && log_result
+      author, modified = log_result.split("|")
       modified = Time.parse(modified.sub(' ', 'T')).utc.iso8601
       size = (File.symlink?(full_path) || File.directory?(full_path)) ? -1 : File.size(full_path)
       { :author => author, :size => size, :modified => modified }
