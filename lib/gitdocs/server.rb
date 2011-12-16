@@ -33,7 +33,7 @@ module Gitdocs
                   end
                   shares[Integer(idx)].update_attributes(share)
                 end
-                manager.restart
+                EM.add_timer(0.1) { manager.restart }
                 redirect! '/settings'
               end
             end

@@ -1,6 +1,6 @@
 - @title = "Settings"
 
-%form{:method => 'POST', :action => '/settings'}
+%form#settings{:method => 'POST', :action => '/settings'}
   %h2 Gitdocs
   #config.field.config
     %input{:type =>'hidden', :value => '0', :name=>"config[load_browser_on_startup]"}
