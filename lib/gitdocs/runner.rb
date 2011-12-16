@@ -14,7 +14,7 @@ module Gitdocs
     SearchResult = Struct.new(:file, :context)
     def search(term)
       results = []
-      if result_test = sh_string("git grep #{ShellTools.escape(term)}")
+      if result_test = sh_string("git grep -i #{ShellTools.escape(term)}")
         result_test.scan(/(.*?):([^\n]*)/) { |(file, context)| results << SearchResult.new(file, context) }
       end
       results
