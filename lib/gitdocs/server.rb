@@ -42,6 +42,10 @@ module Gitdocs
               render! "search", :layout => 'app', :locals => {:conf => manager.config, :results => manager.search(request.GET['q']), :nav_state => nil}
             end
 
+            path('shares').post do
+              Configuration::Share.create
+            end
+
             var :int do |idx|
               gd = gds[idx]
               halt 404 if gd.nil?
@@ -68,7 +72,7 @@ module Gitdocs
               elsif !File.exist?(expanded_path) # edit for non-existent file
                 render! "edit", :layout => 'app', :locals => locals.merge(:contents => "")
               elsif File.directory?(expanded_path) # list directory
-                contents = gd.dir_files(expanded_path)
+                contents =  gd.dir_files(expanded_path)
                 render! "dir", :layout => 'app', :locals => locals.merge(:contents => contents)
               elsif mode == 'delete' # delete file
                 FileUtils.rm(expanded_path)
