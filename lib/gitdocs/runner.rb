@@ -21,7 +21,7 @@ module Gitdocs
     end
 
     def run
-      return false unless self.valid? && self.root
+      return false unless self.valid? && !self.root.empty?
       @show_notifications = @share.notification
       @current_remote     = @share.remote_name
       @current_branch     = @share.branch_name
