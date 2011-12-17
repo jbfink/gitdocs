@@ -41,7 +41,7 @@
         %input{:type =>'hidden', :value => '0', :name=>"share[#{idx}][notification]"}
         %input{:type =>'checkbox', :value => '1', :name=>"share[#{idx}][notification]", :checked => share.notification ? 'checked' : nil}
         %span Notifications?
-      .delete
+      .delete{ :style => "display: hidden;" }
         %input{:type =>'button', :value => "Delete", :class => "btn danger"}
         %input{:type =>'hidden', :name=>"share[#{idx}][delete]"}
 
