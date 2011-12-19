@@ -1,3 +1,3 @@
 module Gitdocs
-  VERSION = "0.4.1-jbfink"
+  VERSION = "0.4.7-jbfink"
 end

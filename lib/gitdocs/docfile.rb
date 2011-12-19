@@ -1,6 +1,7 @@
 module Gitdocs
   class Docfile
-    attr_reader :parent, :path, :name, :author, :modified
+    attr_accessor :parent
+    attr_reader :path, :name
 
     def initialize(path)
       @path = path
@@ -14,24 +15,9 @@ module Gitdocs
       File.expand_path(@parent, root) == expanded_root ||
         File.expand_path(@path, root).include?(expanded_root)
     end
-  end
 
-  class Docdir < Docfile
-    attr_accessor :subdirs
-    attr_accessor :files
-
-    def initialize(path)
-      super
-      @subdirs = []
-      @files = []
-    end
-
-    def items
-      subdirs + files
-    end
-
-    def parent=(dir)
-      dir.subdirs.push(self) if dir
+    def dir?
+      File.directory?(@path)
     end
   end
 end

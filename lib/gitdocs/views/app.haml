@@ -8,6 +8,8 @@
     %link{ :href => "/css/coderay.css", :rel => "stylesheet" }
     %script{ :src => "/js/util.js", :type => "text/javascript", :charset => "utf-8" }
     %script{ :src => "/js/jquery.js", :type => "text/javascript", :charset => "utf-8" }
+    %script{ :src => "/js/jquery.tablesorter.js", :type => "text/javascript", :charset => "utf-8" }
+    %script{ :src => "/js/bootstrap-alerts.js", :type => "text/javascript", :charset => "utf-8" }
     %script{ :src => "/js/app.js", :type => "text/javascript", :charset => "utf-8" }
   %body
     #nav.topbar
@@ -19,6 +21,8 @@
               %a(href = "/") Home
             %li{ :class => ("active" if nav_state == "settings") }
               %a(href = "/settings") Settings
+          %form{:class => "pull-left", :action => "/search", :method => 'GET'}
+            %input{:type => "text", :placeholder => "Search", :name => 'q'}
 
     #main.container
       .content

@@ -19,19 +19,21 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency 'joshbuddy-guard', '~> 0.10.0'
-  s.add_dependency 'thin'
+  s.add_dependency 'thin', '~> 1.3.1'
   s.add_dependency 'renee', '~> 0.3.7'
-  s.add_dependency 'redcarpet'
-  s.add_dependency 'thor'
-  s.add_dependency 'coderay'
+  s.add_dependency 'redcarpet', '~> 2.0.0'
+  s.add_dependency 'thor', '~> 0.14.6'
+  s.add_dependency 'coderay', '~> 1.0.4'
   s.add_dependency 'dante', '~> 0.1.2'
   s.add_dependency 'growl', '~> 1.0.3'
-  s.add_dependency 'yajl-ruby'
-  s.add_dependency 'haml'
+  s.add_dependency 'yajl-ruby', '~> 1.1.0'
+  s.add_dependency 'haml', '~> 3.1.4'
   s.add_dependency 'sqlite3', "~> 1.3.4"
   s.add_dependency 'activerecord', "~> 3.1.0"
   s.add_dependency 'grit', "~> 2.4.1"
   s.add_dependency 'shell_tools', "~> 0.1.0"
+  s.add_dependency 'mimetype-fu', "~> 0.1.2"
+  s.add_dependency 'eventmachine', '>= 1.0.0.beta.3'
 
   s.add_development_dependency 'minitest', "~> 2.6.1"
   s.add_development_dependency 'rake'

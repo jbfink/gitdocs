@@ -3,6 +3,7 @@ require 'renee'
 require 'coderay'
 require 'uri'
 require 'haml'
+require 'mimetype_fu'
 
 module Gitdocs
   class Server
@@ -14,6 +15,7 @@ module Gitdocs
     def start(port = 8888)
       gds = @gitdocs
       manager = @manager
+      Thin::Logging.debug = @manager.debug
       Thin::Server.start('127.0.0.1', port) do
         use Rack::Static, :urls => ['/css', '/js', '/img', '/doc'], :root => File.expand_path("../public", __FILE__)
         run Renee {
@@ -31,9 +33,17 @@ module Gitdocs
                   end
                   shares[Integer(idx)].update_attributes(share)
                 end
-                manager.restart
+                EM.add_timer(0.1) { manager.restart }
                 redirect! '/settings'
               end
+            end
+
+            path('search').get do
+              render! "search", :layout => 'app', :locals => {:conf => manager.config, :results => manager.search(request.GET['q']), :nav_state => nil}
+            end
+
+            path('shares').post do
+              Configuration::Share.create
             end
 
             var :int do |idx|
@@ -47,9 +57,10 @@ module Gitdocs
               parent = '' if parent == '/'
               parent = nil if parent == '.'
               locals = {:idx => idx, :parent => parent, :root => gd.root, :file_path => expanded_path, :nav_state => nil }
-              mode, mime = request.params['mode'], `file -I #{ShellTools.escape(expanded_path)}`.strip
+              mime = File.mime_type?(File.open(expanded_path)) if File.file?(expanded_path)
+              mode = request.params['mode']
               if mode == 'meta' # Meta
-                halt 200, { 'Content-Type' => 'application/json' }, gd.file_meta(file_path).to_json
+                halt 200, { 'Content-Type' => 'application/json' }, [gd.file_meta(file_path).to_json]
               elsif mode == 'save' # Saving
                 File.open(expanded_path, 'w') { |f| f.print request.params['data'] }
                 redirect! "/" + idx.to_s + file_path
@@ -61,7 +72,7 @@ module Gitdocs
               elsif !File.exist?(expanded_path) # edit for non-existent file
                 render! "edit", :layout => 'app', :locals => locals.merge(:contents => "")
               elsif File.directory?(expanded_path) # list directory
-                contents = gd.dir_files(expanded_path)
+                contents =  gd.dir_files(expanded_path)
                 render! "dir", :layout => 'app', :locals => locals.merge(:contents => contents)
               elsif mode == 'delete' # delete file
                 FileUtils.rm(expanded_path)
@@ -71,7 +82,7 @@ module Gitdocs
                 render! "edit", :layout => 'app', :locals => locals.merge(:contents => contents)
               elsif mode != 'raw' # render file
                 begin # attempting to render file
-                  contents = '<div class="tilt">'  + Tilt.new(expanded_path).render + '</div>'
+                  contents = '<div class="tilt">' + render(expanded_path) + '</div>'
                 rescue RuntimeError => e # not tilt supported
                   contents = if mime.match(%r{text/})
                     '<pre class="CodeRay">' + CodeRay.scan_file(expanded_path).encode(:html) + '</pre>'
